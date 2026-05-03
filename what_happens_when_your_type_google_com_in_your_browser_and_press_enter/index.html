@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Happens When You Type https://www.google.com — Tariq Rasheed</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0c0f14;
+            --bg-card: #12161e;
+            --bg-elevated: #1a1f2b;
+            --text: #c8cdd5;
+            --text-bright: #e8ecf1;
+            --text-dim: #6b7280;
+            --accent: #60a5fa;
+            --accent-glow: rgba(96, 165, 250, 0.12);
+            --green: #34d399;
+            --orange: #fb923c;
+            --red: #f87171;
+            --purple: #a78bfa;
+            --cyan: #22d3ee;
+            --pink: #f472b6;
+            --yellow: #fbbf24;
+            --border: #1e2533;
+            --serif: 'Playfair Display', Georgia, serif;
+            --sans: 'Source Sans 3', 'Segoe UI', sans-serif;
+            --mono: 'JetBrains Mono', 'Consolas', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 18px;
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Noise overlay ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ── Header ── */
+        .hero {
+            position: relative;
+            padding: 80px 24px 60px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(96,165,250,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-label {
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards 0.2s;
+        }
+
+        .hero h1 {
+            font-family: var(--serif);
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 700;
+            color: var(--text-bright);
+            line-height: 1.2;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards 0.4s;
+        }
+
+        .hero-meta {
+            font-size: 15px;
+            color: var(--text-dim);
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards 0.6s;
+        }
+
+        .hero-meta span {
+            margin: 0 8px;
+            color: var(--border);
+        }
+
+        /* ── Article ── */
+        .article {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+
+        .article p {
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+
+        .article .lead {
+            font-size: 20px;
+            color: var(--text-bright);
+            font-weight: 300;
+            line-height: 1.9;
+            border-left: 3px solid var(--accent);
+            padding-left: 24px;
+            margin-bottom: 48px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards 0.8s;
+        }
+
+        /* ── Section headers ── */
+        .section-block {
+            margin: 56px 0 28px;
+            position: relative;
+        }
+
+        .section-num {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .section-block h2 {
+            font-family: var(--serif);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-bright);
+            line-height: 1.3;
+        }
+
+        .section-block .accent-line {
+            width: 40px;
+            height: 3px;
+            margin-top: 12px;
+            border-radius: 2px;
+        }
+
+        /* ── Diagram ── */
+        .diagram-container {
+            margin: 48px -40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .diagram-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .diagram-header .dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .diagram-header .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .diagram-header .label {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .diagram-container img {
+            width: 100%;
+            display: block;
+        }
+
+        /* ── Info cards ── */
+        .info-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px 28px;
+            margin: 28px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+        }
+
+        .info-card.dns::before { background: var(--cyan); }
+        .info-card.tcp::before { background: var(--green); }
+        .info-card.firewall::before { background: var(--red); }
+        .info-card.ssl::before { background: var(--yellow); }
+        .info-card.lb::before { background: var(--orange); }
+        .info-card.web::before { background: var(--green); }
+        .info-card.app::before { background: var(--purple); }
+        .info-card.db::before { background: var(--pink); }
+
+        .info-card .card-label {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .info-card.dns .card-label { color: var(--cyan); }
+        .info-card.tcp .card-label { color: var(--green); }
+        .info-card.firewall .card-label { color: var(--red); }
+        .info-card.ssl .card-label { color: var(--yellow); }
+        .info-card.lb .card-label { color: var(--orange); }
+        .info-card.web .card-label { color: var(--green); }
+        .info-card.app .card-label { color: var(--purple); }
+        .info-card.db .card-label { color: var(--pink); }
+
+        .info-card p {
+            margin-bottom: 0;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* ── Code / technical terms ── */
+        code {
+            font-family: var(--mono);
+            font-size: 0.85em;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            padding: 2px 7px;
+            border-radius: 4px;
+            color: var(--accent);
+        }
+
+        /* ── Separator ── */
+        .sep {
+            text-align: center;
+            margin: 56px 0;
+            color: var(--border);
+            font-size: 24px;
+            letter-spacing: 16px;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover { text-decoration: underline; }
+
+        /* ── Flow steps (visual) ── */
+        .flow-steps {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 40px 0;
+        }
+
+        .flow-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .flow-step:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .flow-step .step-num {
+            font-family: var(--mono);
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .flow-step .step-title {
+            font-family: var(--serif);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 6px;
+        }
+
+        .flow-step .step-desc {
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        .s1 .step-num { color: var(--cyan); }
+        .s2 .step-num { color: var(--green); }
+        .s3 .step-num { color: var(--red); }
+        .s4 .step-num { color: var(--yellow); }
+        .s5 .step-num { color: var(--orange); }
+        .s6 .step-num { color: var(--green); }
+        .s7 .step-num { color: var(--purple); }
+        .s8 .step-num { color: var(--pink); }
+
+        /* ── Animations ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .flow-steps { grid-template-columns: 1fr; }
+            .diagram-container { margin: 32px -12px; }
+            .article { padding: 0 16px 60px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="hero-label">Software Engineering Blog</div>
+    <h1>What Happens When You Type <em>https://www.google.com</em> and Press Enter</h1>
+    <div class="hero-meta">
+        Tariq Rasheed <span>|</span> Holberton School <span>|</span> 2026
+    </div>
+</header>
+
+<article class="article">
+
+    <p class="lead">
+        Behind every keystroke lies an intricate chain of networking events, security protocols, 
+        and distributed systems working in concert. What feels instant is actually eight distinct 
+        stages — each critical, each fascinating.
+    </p>
+
+    <!-- Overview Grid -->
+    <div class="flow-steps reveal">
+        <div class="flow-step s1">
+            <div class="step-num">01</div>
+            <div class="step-title">DNS Resolution</div>
+            <div class="step-desc">Domain name translated to IP address</div>
+        </div>
+        <div class="flow-step s2">
+            <div class="step-num">02</div>
+            <div class="step-title">TCP/IP</div>
+            <div class="step-desc">Reliable connection established</div>
+        </div>
+        <div class="flow-step s3">
+            <div class="step-num">03</div>
+            <div class="step-title">Firewall</div>
+            <div class="step-desc">Traffic inspected and filtered</div>
+        </div>
+        <div class="flow-step s4">
+            <div class="step-num">04</div>
+            <div class="step-title">HTTPS/SSL</div>
+            <div class="step-desc">Connection encrypted end-to-end</div>
+        </div>
+        <div class="flow-step s5">
+            <div class="step-num">05</div>
+            <div class="step-title">Load Balancer</div>
+            <div class="step-desc">Request distributed across servers</div>
+        </div>
+        <div class="flow-step s6">
+            <div class="step-num">06</div>
+            <div class="step-title">Web Server</div>
+            <div class="step-desc">HTTP request handled</div>
+        </div>
+        <div class="flow-step s7">
+            <div class="step-num">07</div>
+            <div class="step-title">Application Server</div>
+            <div class="step-desc">Business logic processed</div>
+        </div>
+        <div class="flow-step s8">
+            <div class="step-num">08</div>
+            <div class="step-title">Database</div>
+            <div class="step-desc">Data retrieved and returned</div>
+        </div>
+    </div>
+
+    <div class="sep reveal">...</div>
+
+    <!-- ── 1. DNS ── -->
+    <div class="section-block reveal">
+        <div class="section-num">Step 01</div>
+        <h2>DNS Request</h2>
+        <div class="accent-line" style="background: var(--cyan);"></div>
+    </div>
+
+    <div class="info-card dns reveal">
+        <div class="card-label">Key Concept</div>
+        <p>DNS translates human-readable domain names into IP addresses that computers use to identify each other on the network.</p>
+    </div>
+
+    <p class="reveal">Your browser doesn't know where "www.google.com" lives. It only understands IP addresses. So the very first thing it does is perform a <strong>DNS lookup</strong> to resolve that domain name into a numerical address.</p>
+
+    <p class="reveal">The resolution follows a hierarchy. First, the browser checks its own cache. If it hasn't visited Google recently, it asks the operating system, which checks its local cache. Still no luck? The request goes to your ISP's recursive DNS resolver, which queries the <strong>root nameservers</strong>, then the <code>.com</code> TLD nameservers, and finally Google's authoritative nameservers. The answer comes back: an <strong>A record</strong> mapping <code>www.google.com</code> to an IP like <code>142.250.80.46</code>.</p>
+
+    <!-- ── 2. TCP/IP ── -->
+    <div class="section-block reveal">
+        <div class="section-num">Step 02</div>
+        <h2>TCP/IP</h2>
+        <div class="accent-line" style="background: var(--green);"></div>
+    </div>
+
+    <div class="info-card tcp reveal">
+        <div class="card-label">Key Concept</div>
+        <p>TCP provides reliable, ordered delivery of data. IP handles addressing and routing packets across the internet.</p>
+    </div>
+
+    <p class="reveal">With the IP address in hand, your browser establishes a reliable connection using <strong>TCP</strong> (Transmission Control Protocol) over <strong>IP</strong> (Internet Protocol).</p>
+
+    <p class="reveal">TCP uses a <strong>three-way handshake</strong>: your computer sends a SYN packet to Google's server on <strong>port 443</strong> (the standard HTTPS port). The server responds with SYN-ACK, acknowledging your request. Your computer sends an ACK back, confirming the connection. This handshake guarantees both sides are ready for reliable, ordered communication.</p>
+
+    <!-- ── 3. Firewall ── -->
+    <div class="section-block reveal">
+        <div class="section-num">Step 03</div>
+        <h2>Firewall</h2>
+        <div class="accent-line" style="background: var(--red);"></div>
+    </div>
+
+    <div class="info-card firewall reveal">
+        <div class="card-label">Key Concept</div>
+        <p>Firewalls filter network traffic based on predefined security rules, blocking unauthorized access while allowing legitimate requests.</p>
+    </div>
+
+    <p class="reveal">Before packets travel freely, they must pass through <strong>firewalls</strong> on both ends. Your local firewall inspects outgoing traffic to ensure it's allowed. On Google's side, their firewalls examine incoming traffic against massive security rulesets.</p>
+
+    <p class="reveal">Firewalls filter based on IP addresses, port numbers, and protocols. They block suspicious patterns, prevent unauthorized access, and defend against attacks like DDoS. Your HTTPS request to port 443 passes through cleanly — it matches the profile of legitimate web traffic.</p>
+
+    <!-- ── 4. HTTPS/SSL ── -->
+    <div class="section-block reveal">
+        <div class="section-num">Step 04</div>
+        <h2>HTTPS/SSL</h2>
+        <div class="accent-line" style="background: var(--yellow);"></div>
+    </div>
+
+    <div class="info-card ssl reveal">
+        <div class="card-label">Key Concept</div>
+        <p>TLS encrypts the connection, ensuring data privacy and verifying the server's identity through certificate validation.</p>
+    </div>
+
+    <p class="reveal">Since the URL starts with <code>https://</code>, the browser initiates a <strong>TLS handshake</strong> before any data is exchanged. Google's server presents its SSL/TLS certificate, signed by a trusted Certificate Authority. Your browser verifies this certificate to confirm it's genuinely talking to Google.</p>
+
+    <p class="reveal">Once trust is established, both sides negotiate a <strong>shared symmetric encryption key</strong> using asymmetric cryptography. From this point, every byte exchanged is encrypted — protecting your search queries, personal data, and session cookies from anyone listening on the network.</p>
+
+    <!-- ── 5. Load Balancer ── -->
+    <div class="section-block reveal">
+        <div class="section-num">Step 05</div>
+        <h2>Load Balancer</h2>
+        <div class="accent-line" style="background: var(--orange);"></div>
+    </div>
+
+    <div class="info-card lb reveal">
+        <div class="card-label">Key Concept</div>
+        <p>Load balancers distribute incoming requests across multiple servers to ensure no single machine is overwhelmed.</p>
+    </div>
+
+    <p class="reveal">Your request doesn't hit a single server. Google handles billions of requests daily, so when your encrypted packets arrive, they first reach a <strong>load balancer</strong>.</p>
+
+    <p class="reveal">The load balancer acts as a traffic director, distributing requests across thousands of backend servers using algorithms like <strong>Round-Robin</strong> or <strong>Least Connections</strong>. This ensures no server gets overwhelmed, improves response times, and provides fault tolerance — if one server goes down, traffic is automatically redirected to healthy ones.</p>
+
+    <!-- ── 6. Web Server ── -->
+    <div class="section-block reveal">
+        <div class="section-num">Step 06</div>
+        <h2>Web Server</h2>
+        <div class="accent-line" style="background: var(--green);"></div>
+    </div>
+
+    <div class="info-card web reveal">
+        <div class="card-label">Key Concept</div>
+        <p>The web server handles HTTP requests — serving static files directly or forwarding dynamic requests to the application server.</p>
+    </div>
+
+    <p class="reveal">The load balancer forwards your request to one of Google's web servers (Google uses a custom server called <strong>GWS</strong>). The web server parses the incoming HTTP request and determines what's being asked for.</p>
+
+    <p class="reveal">For static resources like images or CSS files, the web server serves them directly from disk or cache. For dynamic requests — like loading Google's personalized homepage — it forwards the request to the <strong>application server</strong> for processing.</p>
+
+    <!-- ── 7. Application Server ── -->
+    <div class="section-block reveal">
+        <div class="section-num">Step 07</div>
+        <h2>Application Server</h2>
+        <div class="accent-line" style="background: var(--purple);"></div>
+    </div>
+
+    <div class="info-card app reveal">
+        <div class="card-label">Key Concept</div>
+        <p>The application server executes business logic — processing queries, applying personalization, and generating dynamic content.</p>
+    </div>
+
+    <p class="reveal">The application server is where <strong>business logic</strong> lives. It determines your locale, selects the appropriate Google Doodle, prepares personalized settings, and assembles the search interface.</p>
+
+    <p class="reveal">If you type a search query, this is where the search algorithm runs — querying Google's massive index, ranking results, applying personalization, and generating the results page. It orchestrates calls to multiple internal services and databases to build the complete response.</p>
+
+    <!-- ── 8. Database ── -->
+    <div class="section-block reveal">
+        <div class="section-num">Step 08</div>
+        <h2>Database</h2>
+        <div class="accent-line" style="background: var(--pink);"></div>
+    </div>
+
+    <div class="info-card db reveal">
+        <div class="card-label">Key Concept</div>
+        <p>Databases store and retrieve persistent data. Google uses Bigtable and Spanner for massive-scale, globally distributed storage.</p>
+    </div>
+
+    <p class="reveal">When the application server needs data — account preferences, search index entries, or cached results — it queries the appropriate <strong>database</strong>.</p>
+
+    <p class="reveal">Google uses various systems at scale: <strong>Bigtable</strong> for structured data, <strong>Spanner</strong> for globally distributed relational data, and caching layers like Memcache for frequently accessed information. The database processes the query, retrieves the data, and returns it to the application server, which assembles everything into an HTML response.</p>
+
+    <div class="sep reveal">...</div>
+
+    <!-- ── Diagram ── -->
+    <div class="section-block reveal">
+        <div class="section-num">Visual Overview</div>
+        <h2>The Complete Request Flow</h2>
+        <div class="accent-line" style="background: var(--accent);"></div>
+    </div>
+
+    <div class="diagram-container reveal">
+        <div class="diagram-header">
+            <div class="dots">
+                <div class="dot" style="background: var(--red);"></div>
+                <div class="dot" style="background: var(--yellow);"></div>
+                <div class="dot" style="background: var(--green);"></div>
+            </div>
+            <div class="label">request_flow_diagram.png</div>
+        </div>
+        <img src="https://raw.githubusercontent.com/TariqRash/holbertonschool-network/main/what_happens_when_your_type_google_com_in_your_browser_and_press_enter/what_happens_diagram.png" 
+             alt="What happens when you type google.com — complete request flow diagram showing DNS, TCP/IP, SSL, Firewall, Load Balancer, Web Server, Application Server, and Database">
+    </div>
+
+    <div class="sep reveal">...</div>
+
+    <!-- ── Conclusion ── -->
+    <div class="section-block reveal">
+        <div class="section-num">Conclusion</div>
+        <h2>200ms of Engineering</h2>
+        <div class="accent-line" style="background: var(--accent);"></div>
+    </div>
+
+    <p class="reveal">What feels like a single instant — typing a URL and pressing Enter — is actually a beautifully orchestrated sequence of <strong>DNS resolution, TCP connections, encryption handshakes, firewall inspections, load balancing, web serving, application processing, and database queries</strong>.</p>
+
+    <p class="reveal">All of this happens in roughly 200 to 500 milliseconds. Understanding this flow is fundamental for any software engineer, whether you're debugging latency, designing scalable systems, or simply appreciating the engineering behind the web we use every day.</p>
+
+</article>
+
+<footer class="footer">
+    <p>Written by <a href="https://github.com/TariqRash" target="_blank">Tariq Rasheed</a> &mdash; Holberton School 2026</p>
+</footer>
+
+<script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
